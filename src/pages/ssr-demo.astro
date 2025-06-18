@@ -1,0 +1,44 @@
+---
+// Example of a dynamic SSR page that uses URL parameters
+// This will generate content based on the URL query parameters
+
+// Get search parameters from the URL
+const url = new URL(Astro.request.url);
+const name = url.searchParams.get('name') || 'Anonymous';
+const color = url.searchParams.get('color') || 'blue';
+const timestamp = new Date().toLocaleString();
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SSR Demo Page</title>
+</head>
+<body>
+  <div style={`max-width: 800px; margin: 0 auto; padding: 20px; font-family: system-ui, sans-serif; background-color: ${color}25;`}>
+    <h1>Dynamic SSR Demo</h1>
+    
+    <div style="background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px;">
+      <h2>Hello, {name}!</h2>
+      <p>This page is rendered on the server for each request.</p>
+      <p><strong>Server time when this page was generated:</strong> {timestamp}</p>
+      <p><strong>Your selected color:</strong> <span style={`color: ${color}; font-weight: bold;`}>{color}</span></p>
+      <p><strong>Your IP address:</strong> {Astro.clientAddress || 'Not available in preview mode'}</p>
+    </div>
+
+    <h3>Try changing the URL parameters:</h3>
+    <ul>
+      <li><a href="?name=Alice&color=purple">View as Alice with purple</a></li>
+      <li><a href="?name=Bob&color=green">View as Bob with green</a></li>
+      <li><a href="?name=Charlie&color=orange">View as Charlie with orange</a></li>
+      <li><a href="?name=Dana&color=red">View as Dana with red</a></li>
+    </ul>
+
+    <p style="margin-top: 40px;">
+      <a href="/" style="display: inline-block; padding: 8px 16px; background-color: #4682b4; color: white; text-decoration: none; border-radius: 4px;">Back to Home</a>
+    </p>
+  </div>
+</body>
+</html>

@@ -3,6 +3,10 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+
+// Server-side code that runs on each request
+const timestamp = new Date().toLocaleString();
+const randomValue = Math.floor(Math.random() * 100);
 ---
 
 <!doctype html>
@@ -13,36 +17,57 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 	<body>
 		<Header />
 		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This
-				template serves as a lightweight, minimally-styled starting point for anyone looking to build
-				a personal website, blog, or portfolio with Astro.
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to
-				<a href="https://docs.astro.build/">read the docs</a>
-				or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out
-				<a href="https://github.com/Charca/astro-blog-template">astro-blog-template</a>
-				by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
+			<div style="background-color: #f0f8ff; padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 2px solid #4682b4;">
+				<h2>SSR Demo</h2>
+				<p>This page is rendered using Server-Side Rendering (SSR).</p>
+				<p><strong>Current server time:</strong> {timestamp}</p>
+				<p><strong>Random number (server-generated):</strong> {randomValue}</p>
+				<p><em>Refresh the page to see these values change, which proves they're generated on the server for each request.</em></p>
+				
+				<div style="margin-top: 15px;">
+					<a href="/ssr-demo" style="display: inline-block; padding: 8px 16px; background-color: #4682b4; color: white; text-decoration: none; border-radius: 4px; margin-right: 10px;">
+						Visit Interactive SSR Demo
+					</a>
+				</div>
+				
+				<div style="margin-top: 15px;">
+					<button id="fetch-api" style="padding: 8px 16px; background-color: #4682b4; color: white; border: none; border-radius: 4px; cursor: pointer;">
+						Fetch API Data
+					</button>
+					<div id="api-result" style="margin-top: 10px; padding: 10px; border: 1px dashed #ccc; display: none;"></div>
+				</div>
+				
+				<script>
+					// Add the event listener after DOM is fully loaded
+					document.addEventListener('DOMContentLoaded', () => {
+						const fetchButton = document.getElementById('fetch-api');
+						if (fetchButton) {
+							fetchButton.addEventListener('click', async () => {
+								const resultDiv = document.getElementById('api-result');
+								if (resultDiv) {
+									resultDiv.textContent = 'Loading...';
+									resultDiv.style.display = 'block';
+									
+									try {
+										const response = await fetch('/api/time.json');
+										const data = await response.json();
+										
+										resultDiv.innerHTML = `
+											<p><strong>API Response:</strong></p>
+											<p>Timestamp: ${data.timestamp}</p>
+											<p>Message: ${data.message}</p>
+											<p>Random Number: ${data.randomNumber}</p>
+										`;
+									} catch (err) {
+										const error = err as Error;
+										resultDiv.textContent = `Error: ${error.message}`;
+									}
+								}
+							});
+						}
+					});
+				</script>
+			</div>
 		</main>
 		<Footer />
 	</body>
