@@ -1,0 +1,130 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import BlogPostCard from '../../components/BlogPostCard.astro';
+import { getCollection } from 'astro:content';
+
+// Get the category from the URL parameter
+const { category } = Astro.params;
+
+if (!category) {
+  return Astro.redirect('/404');
+}
+
+// Format the category for display (capitalize first letter)
+const formattedCategory = category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
+
+// Fetch all blog posts
+const allPosts = await getCollection('blog');
+
+// Filter posts by the current category (case insensitive)
+const filteredPosts = allPosts.filter(post => 
+  post.data.category?.toLowerCase() === category.toLowerCase()
+);
+
+// Sort by publication date (newest first)
+const posts = filteredPosts.sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const title = `${formattedCategory} - Blog Category`;
+const description = `Articles in the ${formattedCategory} category`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title={title} description={description} />
+    <style>
+      main {
+        section {
+          margin-bottom: 2rem;
+        }
+      }
+      
+      .page-header {
+        text-align: center;
+        margin-bottom: 3rem;
+      }
+      
+      .category-title {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        color: var(--accent-dark);
+      }
+      
+      .category-description {
+        color: rgb(var(--gray));
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      
+      .category-badge {
+        display: inline-block;
+        background-color: var(--accent-dark);
+        color: white;
+        padding: 0.2rem 1rem;
+        border-radius: 20px;
+        font-size: 1rem;
+        margin-bottom: 1rem;
+      }
+      
+      .posts-list {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+      
+      .no-posts {
+        text-align: center;
+        background: rgba(var(--gray-light), 0.5);
+        padding: 2rem;
+        border-radius: 12px;
+        
+        h3 {
+          margin-top: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <Header />
+    <main>
+      <div class="page-header">
+        <span class="category-badge">{formattedCategory}</span>
+        <h1 class="category-title">Category: {formattedCategory}</h1>
+        <p class="category-description">Browse all articles in the {formattedCategory} category</p>
+      </div>
+      
+      <section>
+        {posts.length > 0 ? (
+          <ul class="posts-list">
+            {posts.map((post) => (
+              <BlogPostCard
+                title={post.data.title}
+                pubDate={post.data.pubDate}
+                description={post.data.description}
+                heroImage={post.data.heroImage}
+                category={post.data.category}
+                tags={post.data.tags}
+                url={`/blog/${post.id}/`}
+              />
+            ))}
+          </ul>
+        ) : (
+          <div class="no-posts">
+            <h3>No posts found</h3>
+            <p>There are no articles in the {formattedCategory} category yet.</p>
+            <a href="/blog">View all blog posts</a>
+          </div>
+        )}
+      </section>
+    </main>
+    <Footer />
+  </body>
+</html>

@@ -2,6 +2,11 @@
 title: 'Markdown Style Guide'
 description: 'Here is a sample of some basic Markdown syntax that can be used when writing Markdown content in Astro.'
 pubDate: 'Jun 19 2024'
+category: food
+tags:
+  - gouda
+  - cheddar
+  - brie
 heroImage: '../../assets/blog-placeholder-1.jpg'
 ---
 
@@ -39,7 +44,7 @@ Itatur? Quiatae cullecum rem ent aut odis in re eossequodi nonsequ idebis ne sap
 
 ### Output
 
-![blog placeholder](/blog-placeholder-about.jpg)
+![blog placeholder](../../assets/blog-placeholder-1.jpg)
 
 ## Blockquotes
 

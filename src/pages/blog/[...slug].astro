@@ -1,5 +1,5 @@
 ---
-import { type CollectionEntry, getCollection, getEntry, render } from 'astro:content';
+import { getEntry, render } from 'astro:content';
 import BlogPost from '../../layouts/BlogPost.astro';
 
 // For SSR, we use Astro.params to get the slug from the URL
@@ -18,9 +18,12 @@ if (!entry) {
 }
 
 // In Astro v5, we use render() function
-const { Content } = await render(entry);
+const { Content, remarkPluginFrontmatter } = await render(entry);
+
+// Get the raw content as a string for reading time calculation
+const rawContent = entry.body || "";
 ---
 
-<BlogPost {...entry.data}>
+<BlogPost data={entry.data} content={rawContent}>
 	<Content />
 </BlogPost>

@@ -1,0 +1,148 @@
+---
+import FormattedDate from './FormattedDate.astro';
+
+interface Props {
+  pubDate: Date;
+  updatedDate?: Date;
+  category?: string;
+  tags?: string[];
+  readingTime?: string;
+}
+
+const { pubDate, updatedDate, category, tags, readingTime } = Astro.props;
+---
+
+<div class="blog-meta">
+  <div class="publish-details">
+    <div class="date-info">
+      <span class="published">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        <FormattedDate date={pubDate} />
+      </span>
+      {readingTime && 
+        <span class="reading-time">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          {readingTime}
+        </span>
+      }
+      {updatedDate && (
+        <span class="updated">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path><path d="M3 12a9 9 0 0 0 15 6.7l3-2.7"></path></svg>
+          Updated <FormattedDate date={updatedDate} />
+        </span>
+      )}
+    </div>
+  </div>
+  
+  <div class="taxonomy">
+    {category && (
+      <a href={`/category/${category.toLowerCase()}`} class="category">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M20 5H8.7a2.79 2.79 0 0 1-2.48-1.5l-.53-1A2.79 2.79 0 0 0 3.3 1H2a1 1 0 0 0-1 1v18a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1Z"></path></svg>
+        {category}
+      </a>
+    )}
+    
+    {tags && tags.length > 0 && (
+      <div class="tags">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"></path><path d="M7 7h.01"></path></svg>
+        <div class="tag-list">
+          {tags.map((tag) => (
+            <a href={`/tag/${tag.toLowerCase()}`} class="tag">#{tag}</a>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+</div>
+
+<style>
+  .blog-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+    color: rgb(var(--gray));
+  }
+  
+  .publish-details, .taxonomy {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .date-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+  }
+  
+  .published, .updated, .reading-time {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  
+  .updated {
+    font-style: italic;
+  }
+  
+  .icon {
+    color: rgb(var(--gray));
+  }
+  
+  .category {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background-color: var(--accent-dark);
+    color: white;
+    padding: 0.2rem 0.8rem;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: background-color 0.2s ease;
+  }
+  
+  .category:hover {
+    background-color: var(--accent);
+  }
+  
+  .category .icon {
+    color: white;
+  }
+  
+  .tags {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .tag {
+    color: rgb(var(--gray-dark));
+    text-decoration: none;
+    background-color: rgba(var(--gray-light), 0.7);
+    padding: 0.1rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    transition: background-color 0.2s ease;
+  }
+  
+  .tag:hover {
+    background-color: rgba(var(--gray-light), 1);
+  }
+  
+  @media (max-width: 768px) {
+    .blog-meta {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
+</style>

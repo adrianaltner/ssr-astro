@@ -1,0 +1,132 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { getCollection } from 'astro:content';
+
+// Get all blog posts
+const posts = await getCollection('blog');
+
+// Extract unique categories
+const categories = [...new Set(
+  posts
+    .filter(post => post.data.category)
+    .map(post => post.data.category as string)
+)].sort();
+
+// Count posts per category
+const categoryCounts: Record<string, number> = {};
+categories.forEach(category => {
+  categoryCounts[category] = posts.filter(post => 
+    post.data.category === category
+  ).length;
+});
+
+const title = 'Blog Categories';
+const description = 'Browse all blog categories';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title={title} description={description} />
+    <style>
+      main {
+        padding-bottom: 3rem;
+      }
+      
+      .page-title {
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+        color: var(--accent-dark);
+        text-align: center;
+      }
+      
+      .page-description {
+        text-align: center;
+        color: rgb(var(--gray));
+        max-width: 600px;
+        margin: 0 auto 3rem;
+      }
+      
+      .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+        list-style: none;
+        padding: 0;
+      }
+      
+      .category-card {
+        display: block;
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(var(--gray), 15%);
+        text-decoration: none;
+        transition: all 0.2s ease;
+        border-top: 4px solid var(--accent-dark);
+      }
+      
+      .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(var(--gray), 25%);
+      }
+      
+      .category-name {
+        font-size: 1.25rem;
+        margin: 0;
+        color: rgb(var(--black));
+        font-weight: 600;
+      }
+      
+      .post-count {
+        margin-top: 0.5rem;
+        color: rgb(var(--gray));
+        font-size: 0.9rem;
+      }
+      
+      .no-categories {
+        text-align: center;
+        background: rgba(var(--gray-light), 0.5);
+        padding: 2rem;
+        border-radius: 12px;
+      }
+      
+      @media (max-width: 600px) {
+        .categories-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <Header />
+    <main>
+      <h1 class="page-title">Blog Categories</h1>
+      <p class="page-description">Browse articles by category to find the content that interests you most.</p>
+      
+      {categories.length > 0 ? (
+        <ul class="categories-grid">
+          {categories.map((category) => (
+            <li>
+              <a href={`/category/${category.toLowerCase()}`} class="category-card">
+                <h2 class="category-name">{category}</h2>
+                <div class="post-count">
+                  {categoryCounts[category]} {categoryCounts[category] === 1 ? 'post' : 'posts'}
+                </div>
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div class="no-categories">
+          <h3>No categories yet</h3>
+          <p>There are no categorized blog posts yet.</p>
+          <a href="/blog">View all blog posts</a>
+        </div>
+      )}
+    </main>
+    <Footer />
+  </body>
+</html>

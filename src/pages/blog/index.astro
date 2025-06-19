@@ -2,11 +2,11 @@
 import BaseHead from '../../components/BaseHead.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import BlogPostCard from '../../components/BlogPostCard.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
 import { getCollection } from 'astro:content';
-import FormattedDate from '../../components/FormattedDate.astro';
-import { Image } from 'astro:assets';
 
+// Get all blog posts and sort them by publication date (newest first)
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
@@ -18,92 +18,85 @@ const posts = (await getCollection('blog')).sort(
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 		<style>
 			main {
-				width: 960px;
+				section {
+					margin-bottom: 2rem;
+				}
 			}
-			ul {
+			
+			.page-title {
+				font-size: 2.5rem;
+				margin-bottom: 2rem;
+				color: var(--accent-dark);
+				text-align: center;
+			}
+			
+			.blog-nav {
 				display: flex;
-				flex-wrap: wrap;
+				justify-content: center;
+				gap: 1rem;
+				margin-bottom: 2rem;
+			}
+			
+			.blog-nav-link {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.5rem;
+				padding: 0.5rem 1rem;
+				border-radius: 20px;
+				background-color: white;
+				color: rgb(var(--gray-dark));
+				text-decoration: none;
+				transition: all 0.2s ease;
+				box-shadow: 0 1px 4px rgba(var(--gray), 20%);
+			}
+			
+			.blog-nav-link:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 3px 8px rgba(var(--gray), 25%);
+				background-color: rgba(var(--gray-light), 0.5);
+			}
+			
+			.blog-nav-link .icon {
+				color: var(--accent-dark);
+			}
+			
+			.posts-list {
+				display: flex;
+				flex-direction: column;
 				gap: 2rem;
 				list-style-type: none;
 				margin: 0;
 				padding: 0;
-			}
-			ul li {
-				width: calc(50% - 1rem);
-			}
-			ul li * {
-				text-decoration: none;
-				transition: 0.2s ease;
-			}
-			ul li:first-child {
-				width: 100%;
-				margin-bottom: 1rem;
-				text-align: center;
-			}
-			ul li:first-child img {
-				width: 100%;
-			}
-			ul li:first-child .title {
-				font-size: 2.369rem;
-			}
-			ul li img {
-				margin-bottom: 0.5rem;
-				border-radius: 12px;
-			}
-			ul li a {
-				display: block;
-			}
-			.title {
-				margin: 0;
-				color: rgb(var(--black));
-				line-height: 1;
-			}
-			.date {
-				margin: 0;
-				color: rgb(var(--gray));
-			}
-			ul li a:hover h4,
-			ul li a:hover .date {
-				color: rgb(var(--accent));
-			}
-			ul a:hover img {
-				box-shadow: var(--box-shadow);
-			}
-			@media (max-width: 720px) {
-				ul {
-					gap: 0.5em;
-				}
-				ul li {
-					width: 100%;
-					text-align: center;
-				}
-				ul li:first-child {
-					margin-bottom: 0;
-				}
-				ul li:first-child .title {
-					font-size: 1.563em;
-				}
 			}
 		</style>
 	</head>
 	<body>
 		<Header />
 		<main>
+			<h1 class="page-title">Blog Posts</h1>
+			<div class="blog-nav">
+				<a href="/categories" class="blog-nav-link">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M20 5H8.7a2.79 2.79 0 0 1-2.48-1.5l-.53-1A2.79 2.79 0 0 0 3.3 1H2a1 1 0 0 0-1 1v18a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1Z"></path></svg>
+					Browse Categories
+				</a>
+				<a href="/tags" class="blog-nav-link">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"></path><path d="M7 7h.01"></path></svg>
+					Browse Tags
+				</a>
+			</div>
 			<section>
-				<ul>
+				<ul class="posts-list">
 					{
 						posts.map((post) => (
-							<li>
-								<a href={`/blog/${post.id}/`}>
-									{post.data.heroImage && (
-										<Image width={720} height={360} src={post.data.heroImage} alt="" />
-									)}
-									<h4 class="title">{post.data.title}</h4>
-									<p class="date">
-										<FormattedDate date={post.data.pubDate} />
-									</p>
-								</a>
-							</li>
+							<BlogPostCard
+								title={post.data.title}
+								pubDate={post.data.pubDate}
+								description={post.data.description}
+								heroImage={post.data.heroImage}
+								category={post.data.category}
+								tags={post.data.tags}
+								url={`/blog/${post.id}/`}
+							/>
 						))
 					}
 				</ul>
